@@ -39,7 +39,8 @@ var Verifier = require('./verifier');
 var Package = require('../package.json');
 var Errors = require('./errors');
 
-var BASE_URL = 'http://localhost:3232/bws/api';
+var BASE_URL = 'http://ec2-35-180-103-222.eu-west-3.compute.amazonaws.com:3232/bws/api';
+// var BASE_URL = 'http://localhost:3232/bws/api';
 
 /**
  * @desc ClientAPI constructor.
