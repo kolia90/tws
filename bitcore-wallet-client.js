@@ -39,8 +39,8 @@ var Verifier = require('./verifier');
 var Package = require('../package.json');
 var Errors = require('./errors');
 
-var BASE_URL = 'http://ec2-35-180-103-222.eu-west-3.compute.amazonaws.com:3232/bws/api';
-// var BASE_URL = 'http://localhost:3232/bws/api';
+// TODO-SERVICE-URL
+var BASE_URL = 'https://tws.dev.tituscoin.com/bws/api';
 
 /**
  * @desc ClientAPI constructor.
@@ -656,7 +656,7 @@ API.prototype.getBalanceFromPrivateKey = function(privateKey, coin, cb) {
     coin = 'btc';
   }
   var B = Bitcore_[coin];
- 
+
   var privateKey = new B.PrivateKey(privateKey);
   var address = privateKey.publicKey.toAddress();
   self.getUtxos({
@@ -1015,7 +1015,7 @@ API.signTxp = function(txp, derivedXPrivKey) {
 
   var t = Utils.buildTx(txp);
 
-  var signatures = _.map(privs, function(priv, i) { 
+  var signatures = _.map(privs, function(priv, i) {
     return t.getSignatures(priv);
   });
 
@@ -1661,12 +1661,12 @@ API.prototype.savePreferences = function(preferences, cb) {
 API.prototype.fetchPayPro = function(opts, cb) {
   $.checkArgument(opts)
     .checkArgument(opts.payProUrl);
- 
+
   PayPro.get({
     url: opts.payProUrl,
     http: this.payProHttp,
     coin: this.credentials.coin || 'btc',
-  }, function(err, paypro) { 
+  }, function(err, paypro) {
     if (err)
       return cb(err);
 
@@ -3222,7 +3222,7 @@ Credentials.prototype._expand = function() {
   }
 
   // requests keys from mnemonics, but using a xPubkey
-  // This is only used when importing mnemonics FROM 
+  // This is only used when importing mnemonics FROM
   // an hwwallet, in which xPriv was not available when
   // the wallet was created.
   if (this.entropySourcePath) {
@@ -3450,7 +3450,7 @@ Credentials.prototype.clearMnemonic = function() {
 
 Credentials.fromOldCopayWallet = function(w) {
   function walletPrivKeyFromOldCopayWallet(w) {
-    // IN BWS, the master Pub Keys are not sent to the server, 
+    // IN BWS, the master Pub Keys are not sent to the server,
     // so it is safe to use them as seed for wallet's shared secret.
     var seed = w.publicKeyRing.copayersExtPubKeys.sort().join('');
     var seedBuf = new Buffer(seed);
@@ -3477,7 +3477,7 @@ Credentials.fromOldCopayWallet = function(w) {
       requestDerivation = (new Bitcore.HDPrivateKey(credentials.xPrivKey))
         .deriveChild(path).hdPublicKey;
     } else {
-      // this 
+      // this
       var path = Constants.PATHS.REQUEST_KEY_AUTH;
       requestDerivation = (new Bitcore.HDPublicKey(xPubStr)).deriveChild(path);
     }
@@ -3983,7 +3983,7 @@ PayPro.get = function(opts, cb) {
     };
 
     var requiredFeeRate = pd.get('required_fee_rate');
-    if (requiredFeeRate) 
+    if (requiredFeeRate)
       ret.requiredFeeRate = requiredFeeRate;
 
     return cb(null, ret);
@@ -11472,7 +11472,7 @@ Address.prototype.toCashAddress = function() {
  * Retrieves the the length in bits of the encoded hash from its bit
  * representation within the version byte.
  *
- * @param {number} versionByte 
+ * @param {number} versionByte
  */
 function getHashSize(versionByte) {
   switch (versionByte & 7) {
@@ -11519,7 +11519,7 @@ function checksumToArray(checksum) {
  * @param {Array} data Array of 5-bit integers over which the checksum is to be computed.
  */
  var GENERATOR = _.map(
-  [0x98f2bc8e61, 0x79b76d99e2, 0xf33e5fb3c4, 0xae2eabe2a8, 0x1e4f43e470], function(x){ 
+  [0x98f2bc8e61, 0x79b76d99e2, 0xf33e5fb3c4, 0xae2eabe2a8, 0x1e4f43e470], function(x){
     return new BN(x);
   }
 );
@@ -13784,7 +13784,7 @@ var BufferReader = function BufferReader(buf) {
     });
   } else if (_.isString(buf)) {
     var b = new Buffer(buf, 'hex');
-    if (b.length * 2 != buf.length) 
+    if (b.length * 2 != buf.length)
       throw new TypeError('Invalid hex string');
 
     this.set({
@@ -17369,7 +17369,7 @@ Interpreter.prototype.checkLockTime = function(nLockTime) {
   return true;
 }
 
-/** 
+/**
  * Based on the inner loop of bitcoind's EvalScript function
  * bitcoind commit: b5d1b1092998bc95313856d535c632ea5a8f9104
  */
@@ -20378,11 +20378,11 @@ var ENABLE_SIGHASH_FORKID = true;
 var sighashForForkId = function(transaction, sighashType, inputNumber, subscript, satoshisBN) {
   var input = transaction.inputs[inputNumber];
   $.checkArgument(
-    satoshisBN instanceof BN, 
+    satoshisBN instanceof BN,
     'For ForkId=0 signatures, satoshis or complete input must be provided'
   );
 
-  
+
 
   function GetForkId() {
     return 0; // In the UAHF, a fork id of 0 is used (see [4] REQ-6-2 NOTE 4)
@@ -20423,7 +20423,7 @@ var sighashForForkId = function(transaction, sighashType, inputNumber, subscript
     } else {
       tx.outputs[n].toBufferWriter(writer);
     }
-   
+
     var buf = writer.toBuffer();
     var ret = Hash.sha256sha256(buf);
     return ret;
@@ -20456,7 +20456,7 @@ function getHash (w) {
   var ret = Hash.sha256sha256(buf);
   ret = new BufferReader(ret).readReverse();
   return ret;
-};  
+};
 
 
 
@@ -20479,8 +20479,8 @@ function getHash (w) {
 
   // value of the output spent by this input (8-byte little endian)
   writer.writeUInt64LEBN(satoshisBN);
-  
-  // nSequence of the input (4-byte little endian) 
+
+  // nSequence of the input (4-byte little endian)
   var sequenceNumber = input.sequenceNumber;
   writer.writeUInt32LE(sequenceNumber);
 
@@ -20490,7 +20490,7 @@ function getHash (w) {
   // Locktime
   writer.writeUInt32LE(transaction.nLockTime);
 
-  // sighashType 
+  // sighashType
   writer.writeUInt32LE(sighashType >>>0);
 
   var buf = writer.toBuffer();
@@ -22563,7 +22563,7 @@ function encode(data) {
 /***
  * Decodes the given base32-encoded string into an array of 5-bit integers.
  *
- * @param {string} base32 
+ * @param {string} base32
  */
 function decode(base32) {
   $.checkArgument(typeof base32 === 'string', 'Must be base32-encoded string');
@@ -44917,7 +44917,7 @@ PaymentProtocol.prototype.x509Verify = function(returnTrust) {
   pem = KJUR.asn1.ASN1Util.getPEMStringFromHex(der, 'CERTIFICATE');
   var caName = RootCerts.getTrusted(pem);
 
-  if (!caName) 
+  if (!caName)
     caName = PaymentProtocol.completeChainAndGetCA(chain);
 
   if (chain.length === 1 && !caName) {
@@ -65562,26 +65562,26 @@ var at, // The index of the current character
             text:    text
         };
     },
-    
+
     next = function (c) {
         // If a c parameter is provided, verify that it matches the current character.
         if (c && c !== ch) {
             error("Expected '" + c + "' instead of '" + ch + "'");
         }
-        
+
         // Get the next character. When there are no more characters,
         // return the empty string.
-        
+
         ch = text.charAt(at);
         at += 1;
         return ch;
     },
-    
+
     number = function () {
         // Parse a number value.
         var number,
             string = '';
-        
+
         if (ch === '-') {
             string = '-';
             next('-');
@@ -65615,14 +65615,14 @@ var at, // The index of the current character
             return number;
         }
     },
-    
+
     string = function () {
         // Parse a string value.
         var hex,
             i,
             string = '',
             uffff;
-        
+
         // When parsing for string values, we must look for " and \ characters.
         if (ch === '"') {
             while (next()) {
@@ -65779,7 +65779,7 @@ value = function () {
 
 module.exports = function (source, reviver) {
     var result;
-    
+
     text = source;
     at = 0;
     ch = ' ';
@@ -65834,7 +65834,7 @@ function quote(string) {
     // backslash characters, then we can safely slap some quotes around it.
     // Otherwise we must also replace the offending characters with safe escape
     // sequences.
-    
+
     escapable.lastIndex = 0;
     return escapable.test(string) ? '"' + string.replace(escapable, function (a) {
         var c = meta[a];
@@ -65852,47 +65852,47 @@ function str(key, holder) {
         mind = gap,
         partial,
         value = holder[key];
-    
+
     // If the value has a toJSON method, call it to obtain a replacement value.
     if (value && typeof value === 'object' &&
             typeof value.toJSON === 'function') {
         value = value.toJSON(key);
     }
-    
+
     // If we were called with a replacer function, then call the replacer to
     // obtain a replacement value.
     if (typeof rep === 'function') {
         value = rep.call(holder, key, value);
     }
-    
+
     // What happens next depends on the value's type.
     switch (typeof value) {
         case 'string':
             return quote(value);
-        
+
         case 'number':
             // JSON numbers must be finite. Encode non-finite numbers as null.
             return isFinite(value) ? String(value) : 'null';
-        
+
         case 'boolean':
         case 'null':
             // If the value is a boolean or null, convert it to a string. Note:
             // typeof null does not produce 'null'. The case is included here in
             // the remote chance that this gets fixed someday.
             return String(value);
-            
+
         case 'object':
             if (!value) return 'null';
             gap += indent;
             partial = [];
-            
+
             // Array.isArray
             if (Object.prototype.toString.apply(value) === '[object Array]') {
                 length = value.length;
                 for (i = 0; i < length; i += 1) {
                     partial[i] = str(i, value) || 'null';
                 }
-                
+
                 // Join all of the elements together, separated with commas, and
                 // wrap them in brackets.
                 v = partial.length === 0 ? '[]' : gap ?
@@ -65901,7 +65901,7 @@ function str(key, holder) {
                 gap = mind;
                 return v;
             }
-            
+
             // If the replacer is an array, use it to select the members to be
             // stringified.
             if (rep && typeof rep === 'object') {
@@ -65927,7 +65927,7 @@ function str(key, holder) {
                     }
                 }
             }
-            
+
         // Join all of the member texts together, separated with commas,
         // and wrap them in braces.
 
@@ -65943,7 +65943,7 @@ module.exports = function (value, replacer, space) {
     var i;
     gap = '';
     indent = '';
-    
+
     // If the space parameter is a number, make an indent string containing that
     // many spaces.
     if (typeof space === 'number') {
@@ -65963,7 +65963,7 @@ module.exports = function (value, replacer, space) {
     && (typeof replacer !== 'object' || typeof replacer.length !== 'number')) {
         throw new Error('JSON.stringify');
     }
-    
+
     // Make a fake root object containing our value under the key of ''.
     // Return the result of stringifying the value.
     return str('', {'': value});
@@ -98503,7 +98503,7 @@ module.exports = function privateDecrypt(private_key, enc, reverse) {
   } else {
     padding = 4;
   }
-  
+
   var key = parseKeys(private_key);
   var k = key.modulus.byteLength();
   if (enc.length > k || new bn(enc).cmp(key.modulus) >= 0) {
@@ -103916,7 +103916,7 @@ var IncomingMessage = exports.IncomingMessage = function (xhr, response, mode) {
 		self.url = response.url
 		self.statusCode = response.status
 		self.statusMessage = response.statusText
-		
+
 		response.headers.forEach(function (header, key){
 			self.headers[key.toLowerCase()] = header
 			self.rawHeaders.push(key, header)
@@ -104039,7 +104039,7 @@ IncomingMessage.prototype._onXHRProgress = function () {
 				self.push(new Buffer(response))
 				break
 			}
-			// Falls through in IE8	
+			// Falls through in IE8
 		case 'text':
 			try { // This will fail when readyState = 3 in IE9. Switch mode and wait for readyState = 4
 				response = xhr.responseText
@@ -108188,13 +108188,13 @@ Script.prototype.runInContext = function (context) {
     if (!(context instanceof Context)) {
         throw new TypeError("needs a 'context' argument.");
     }
-    
+
     var iframe = document.createElement('iframe');
     if (!iframe.style) iframe.style = {};
     iframe.style.display = 'none';
-    
+
     document.body.appendChild(iframe);
-    
+
     var win = iframe.contentWindow;
     var wEval = win.eval, wExecScript = win.execScript;
 
@@ -108203,7 +108203,7 @@ Script.prototype.runInContext = function (context) {
         wExecScript.call(win, 'null');
         wEval = win.eval;
     }
-    
+
     forEach(Object_keys(context), function (key) {
         win[key] = context[key];
     });
@@ -108212,11 +108212,11 @@ Script.prototype.runInContext = function (context) {
             win[key] = context[key];
         }
     });
-    
+
     var winKeys = Object_keys(win);
 
     var res = wEval.call(win, this.code);
-    
+
     forEach(Object_keys(win), function (key) {
         // Avoid copying circular objects like `top` and `window` by only
         // updating existing context properties or new properties in the `win`
@@ -108231,9 +108231,9 @@ Script.prototype.runInContext = function (context) {
             defineProp(context, key, win[key]);
         }
     });
-    
+
     document.body.removeChild(iframe);
-    
+
     return res;
 };
 
